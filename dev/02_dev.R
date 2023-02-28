@@ -16,12 +16,16 @@
 ## Dependencies ----
 ## Amend DESCRIPTION with dependencies read from package code parsing
 ## install.package('attachment') # if needed.
+
 attachment::att_amend_desc()
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module(name = "name_of_module1", with_test = TRUE) # Name of the module
-golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module
+golem::add_module(name = "home", with_test = TRUE) # Name of the module
+golem::add_module(name = "explore", with_test = TRUE) # Name of the module
+golem::add_module(name = "profil", with_test = TRUE) # Name of the module
+golem::add_module(name = "bias", with_test = TRUE) # Name of the module
+golem::add_module(name = "credit", with_test = TRUE) # Name of the module
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
@@ -37,7 +41,8 @@ golem::add_sass_file("custom")
 
 ## Add internal datasets ----
 ## If you have data in your package
-usethis::use_data_raw(name = "my_dataset", open = FALSE)
+usethis::use_data_raw(name = "recruitment_data", open = FALSE)
+usethis::use_data_raw(name = "colors", open = FALSE)
 
 ## Tests ----
 ## Add one line by test you want to create

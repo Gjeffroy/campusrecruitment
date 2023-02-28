@@ -20,12 +20,12 @@
 ##
 golem::fill_desc(
   pkg_name = "campusrecruitment", # The Name of the package containing the App
-  pkg_title = "PKG_TITLE", # The Title of the package containing the App
-  pkg_description = "PKG_DESC.", # The Description of the package containing the App
-  author_first_name = "AUTHOR_FIRST", # Your First Name
-  author_last_name = "AUTHOR_LAST", # Your Last Name
-  author_email = "AUTHOR@MAIL.COM", # Your Email
-  repo_url = NULL # The URL of the GitHub Repo (optional)
+  pkg_title = "Campus Recruitment", # The Title of the package containing the App
+  pkg_description = "A Shiny app that explore the campus recruitment dataset.", # The Description of the package containing the App
+  author_first_name = "Guillaume", # Your First Name
+  author_last_name = "Jeffroy", # Your Last Name
+  author_email = "guillaume.jeffroy@gmail.com", # Your Email
+  repo_url = "https://github.com/Gjeffroy/campusrecruitment" # The URL of the GitHub Repo (optional)
 )
 
 ## Set {golem} options ----
@@ -33,11 +33,11 @@ golem::set_golem_options()
 
 ## Create Common Files ----
 ## See ?usethis for more information
-usethis::use_mit_license("Golem User") # You can set another license here
+usethis::use_mit_license("MIT(guillaume jeffroy)") # You can set another license here
 usethis::use_readme_rmd(open = FALSE)
 # Note that `contact` is required since usethis version 2.1.5
 # If your {usethis} version is older, you can remove that param
-usethis::use_code_of_conduct(contact = "Golem User")
+usethis::use_code_of_conduct(contact = "Guillaume Jeffroy")
 usethis::use_lifecycle_badge("Experimental")
 usethis::use_news_md(open = FALSE)
 
