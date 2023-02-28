@@ -14,14 +14,20 @@ mod_track_ui <- function(id){
              value = "track",
              hr(),
              br(), br(),
-             checkboxGroupInput(ns("checkboxstage"),
-                                label = h3("Select student at least two stages to add to the Sankey plot"),
-                                choices = list("Specialization in Higher Secondary Education" = "hsc_s",
-                                               "Field of degree education" = "degree_t",
-                                               "Specialisation of degree education" = "specialisation",
-                                               "Employed" = "status")
-                                ),
-             plotly::plotlyOutput(ns("sankey"))
+             fluidRow(
+               column(width = 3,
+                      checkboxGroupInput(ns("checkboxstage"),
+                                         label = h3("Select at least two stages in the student track to visualize the flow"),
+                                         choices = list("1.Specialization in Higher Secondary Education" = "hsc_s",
+                                                        "2.Field of degree education" = "degree_t",
+                                                        "3.Specialisation of degree education" = "specialisation",
+                                                        "4.Employed" = "status")
+                      )
+               ),
+               column(width = 9, align = "center",
+                      plotly::plotlyOutput(ns("sankey")))
+             )
+
     )
 
   )
@@ -33,7 +39,13 @@ mod_track_ui <- function(id){
 mod_track_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    output$sankey <- plotly::renderPlotly(plot_sankey_recursive(dataset))
+
+    stages <- reactive({
+      print(input$checkboxstage)
+      return(input$checkboxstage)
+    })
+
+    output$sankey <- plotly::renderPlotly(plot_sankey_recursive(dataset, stages()))
 
   })
 }

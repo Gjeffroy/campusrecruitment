@@ -317,7 +317,7 @@ plot_sankey <- function(sankey_data, sankey_ids) {
       value =  sankey_data$n
     )
   )
-  fig <- fig %>% plotly::layout(title = "Basic Sankey Diagram",
+  fig <- fig %>% plotly::layout(title = "",
                                 font = list(size = 10))
 
   return(fig)
@@ -325,22 +325,24 @@ plot_sankey <- function(sankey_data, sankey_ids) {
 }
 
 
-plot_sankey_recursive <- function(dataset){
+plot_sankey_recursive <- function(dataset, stages){
 
   student_stages <- c('hsc_s', 'degree_t', 'specialisation', 'status')
   sankey_ids = data.frame(name=c())
   sankey_data <- NULL
+  if(length(stages)>1){
+    for (i in seq(length(stages) - 1)){
+      where_name <- stages[i]
+      to_name <- stages[i+1]
 
-  for (i in seq(length(student_stages) - 1)){
-    where_name <- student_stages[i]
-    to_name <- student_stages[i+1]
+      sankey_ids <- gen_sankey_id(dataset, where_name, to_name, sankey_ids)
+      sankey_data <-  gen_sankey_data(dataset, where_name, to_name, sankey_ids, sankey_data)
+    }
 
-    sankey_ids <- gen_sankey_id(dataset, where_name, to_name, sankey_ids)
-    sankey_data <-  gen_sankey_data(dataset, where_name, to_name, sankey_ids, sankey_data)
+    fig <- plot_sankey(sankey_data, sankey_ids)
+    return(fig)
   }
 
-  fig <- plot_sankey(sankey_data, sankey_ids)
-  return(fig)
 
 }
 

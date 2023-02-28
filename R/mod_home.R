@@ -68,7 +68,7 @@ mod_home_server <- function(id){
     })
 
     observeEvent(input$bias_bt,{
-      tab_react$id <-"Bias"
+      tab_react$id <-"Track"
       tab_react$count <- tab_react$count +1
     })
 
