@@ -16,8 +16,10 @@
 ## Dependencies ----
 ## Amend DESCRIPTION with dependencies read from package code parsing
 ## install.package('attachment') # if needed.
-
-attachment::att_amend_desc()
+usethis::use_package('dplyr')
+usethis::use_package('plotly')
+usethis::use_package('ggplot2')
+# attachment::att_amend_desc()
 
 ## Add modules ----
 ## Create a module infrastructure in R/
@@ -25,6 +27,7 @@ golem::add_module(name = "home", with_test = TRUE) # Name of the module
 golem::add_module(name = "explore", with_test = TRUE) # Name of the module
 golem::add_module(name = "profil", with_test = TRUE) # Name of the module
 golem::add_module(name = "bias", with_test = TRUE) # Name of the module
+golem::add_module(name = "track", with_test = TRUE) # Name of the module
 golem::add_module(name = "credit", with_test = TRUE) # Name of the module
 
 ## Add helper functions ----
@@ -69,7 +72,7 @@ covrpage::covrpage()
 usethis::use_github()
 
 # GitHub Actions
-usethis::use_github_action()
+usethis::use_github_action("push")
 # Chose one of the three
 # See https://usethis.r-lib.org/reference/use_github_action.html
 usethis::use_github_action_check_release()
@@ -78,23 +81,23 @@ usethis::use_github_action_check_full()
 # Add action for PR
 usethis::use_github_action_pr_commands()
 
-# Travis CI
-usethis::use_travis()
-usethis::use_travis_badge()
-
-# AppVeyor
-usethis::use_appveyor()
-usethis::use_appveyor_badge()
-
-# Circle CI
-usethis::use_circleci()
-usethis::use_circleci_badge()
-
-# Jenkins
-usethis::use_jenkins()
-
-# GitLab CI
-usethis::use_gitlab_ci()
+# # Travis CI
+# usethis::use_travis()
+# usethis::use_travis_badge()
+#
+# # AppVeyor
+# usethis::use_appveyor()
+# usethis::use_appveyor_badge()
+#
+# # Circle CI
+# usethis::use_circleci()
+# usethis::use_circleci_badge()
+#
+# # Jenkins
+# usethis::use_jenkins()
+#
+# # GitLab CI
+# usethis::use_gitlab_ci()
 
 # You're now set! ----
 # go to dev/03_deploy.R
