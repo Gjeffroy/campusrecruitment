@@ -13,76 +13,96 @@ mod_explore_ui <- function(id) {
     title = "Explore",
     value = "Explore",
     hr(),
-
-
     fluidRow(
-      column(width = 3),
       column(
-        width = 2,
-        align = "center",
-        selectInput(
-          inputId = ns("gender_sl"),
-          label = "Gender:",
-          choices = c("All" = "c('M','F')",
-                      "M" =
-                        "c('M')",
-                      "F" = "c('F')"),
-          selected = "All"
+        width = 3,
+        radioButtons(
+          ns("plottype_sl"),
+          label = "Plot Type",
+          choices = c('distribution', 'scatter')
         ),
-      ),
-      column(
-        width = 2,
-        align = "center",
-        selectInput(
-          inputId = ns("speciality_sl"),
-          label = "Speciality:",
-          choices = c(
-            "All" = "c('Arts','Commerce', 'Science')",
-            "Arts" =
-              "c('Arts')",
-            "Commerce" = "c('Commerce')",
-            "Science" = "c('Science')"
+        conditionalPanel(
+          condition = "input.plottype_sl == 'distribution'",
+          ns = ns ,
+          selectInput(
+            ns("variable_sl"),
+            label = "Variable",
+            choices = c("", colnames(dataset)),
+            selected = ""
           ),
-          selected = "All"
+          selectInput(
+            ns("type_sl"),
+            label = "Type",
+            choices = c('count', 'density'),
+          )
+        ),
+        conditionalPanel(
+          condition = "input.plottype_sl == 'scatter'",
+          ns = ns ,
+          selectInput(
+            ns("variable_x_sl"),
+            label = "X variable",
+            choices = c("", numeric_col),
+            selected = ""
+          ),
+          selectInput(
+            ns("variable_y_sl"),
+            label = "Y variable",
+            choices = c("", numeric_col),
+            selected = ""
+          )
+        ),
+        selectInput(
+          ns("colsplitby_sl"),
+          label = "Column split by",
+          choices = c("No split", cat_col),
+          selected = "No split"
+        ),
+        selectInput(
+          ns("rowsplitby_sl"),
+          label = "Row split by",
+          choices = c("No split", cat_col),
+          selected = "No split"
+        ),
+        selectInput(
+          ns("colorsplitby_sl"),
+          label = "Color by",
+          choices = c("No split", cat_col),
+          selected = "No split"
         )
       ),
-      column(
-        width = 2,
-        align = "center",
-        selectInput(
-          inputId = ns("workex_sl"),
-          label = "Work experience:",
-          choices = c(
-            "All" = "c('Yes','No')",
-            "Yes" =
-              "c('Yes')",
-            "No" = "c('No')"
-          ),
-          selected = "All"
-        )
-      ),
-      column(width = 3),
 
-    ),
-    br(),
-    fluidRow(
-      column(
-        width = 4,
-        align = "center",
-        plotly::plotlyOutput(ns("salary_plot"))
-      ),
-      column(
-        width = 4,
-        align = "center",
-        plotly::plotlyOutput(ns("workex_plot"))
-      ),
-      column(
-        width = 4,
-        align = "center",
-        plotly::plotlyOutput(ns("etest_plot"))
+      column(width = 9,
+             textOutput(ns("descriptions")),
+             conditionalPanel(
+               condition = "(input.plottype_sl == 'distribution') & (input.variable_sl!='')",
+               ns = ns,
+               plotlyOutput(ns("dist_plot"))
+             ),
+             conditionalPanel(
+               condition = "(input.plottype_sl == 'scatter') & (input.variable_y_sl!='') & (input.variable_x_sl!='')",
+               ns = ns,
+               plotlyOutput(ns("scatter_plot"))
+             ),
+
+             conditionalPanel(
+               condition = "(input.plottype_sl == 'distribution') & (input.variable_sl=='')",
+               ns = ns ,
+               h3("Select a variable to plot", style="text-align: center;")
+
+             ),
+             conditionalPanel(
+               condition = "(input.plottype_sl == 'scatter') & !((input.variable_y_sl!='') & (input.variable_x_sl!=''))",
+               ns = ns ,
+               h3("Select variable x and y to plot", style="text-align: center;")
+
+             ),
+             align = "center"
       )
-    )
-  ))
+
+  )
+  )
+  )
 }
 
 #' explore Server Functions
@@ -90,24 +110,104 @@ mod_explore_ui <- function(id) {
 #' @noRd
 mod_explore_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
 
-    subset_df <- reactive({
-      dataset %>% dplyr::filter(gender %in% eval(parse(text = input$gender_sl)),
-                                hsc_s %in% eval(parse(text = input$speciality_sl)),
-                                workex %in% eval(parse(text = input$workex_sl)))
+    ns <- session$ns
+    variable <- reactive({
+      return(input$variable_sl)
     })
 
 
-    output$salary_plot <-
-      plotly::renderPlotly(salary_distribution_plot(dataset, subset_df()))
-    output$workex_plot <-
-      plotly::renderPlotly(workex_plot(subset_df()))
-    output$etest_plot <-
-      plotly::renderPlotly(etest_distribution_plot(subset_df()))
+    dist_plot <- reactive({
+      if (input$plottype_sl == "distribution") {
+        if (input$variable_sl %in% cat_col) {
+          bar_plot(
+            dataset,
+            input$variable_sl,
+            colsplit_by = input$colsplitby_sl,
+            rowsplit_by = input$rowsplitby_sl,
+            colorsplit_by = input$colorsplitby_sl
+          )
+        } else {
+          distribution_plot(
+            dataset,
+            input$variable_sl,
+            type = input$type_sl,
+            colsplit_by = input$colsplitby_sl,
+            rowsplit_by = input$rowsplitby_sl,
+            colorsplit_by = input$colorsplitby_sl
+          )
+
+          }
+        }
+      })
+
+    scat_plot <- reactive({
+      if(input$plottype_sl == "scatter"){
+
+        scatter_plot(
+          dataset,
+          input$variable_x_sl,
+          input$variable_y_sl,
+          colsplit_by = input$colsplitby_sl,
+          rowsplit_by = input$rowsplitby_sl,
+          colorsplit_by = input$colorsplitby_sl)
+
+      }
+    })
+
+    descriptions <- reactive({
+      var_list = list()
+      if(input$plottype_sl == "scatter"){
+        if(input$variable_x_sl!=""){
+          var_list <- append(var_list, input$variable_x_sl)
+        }
+
+        if(input$variable_y_sl!=""){
+          var_list <- append(var_list, input$variable_y_sl)
+        }
+      }
+
+      if(input$plottype_sl == "distribution"){
+        if(input$variable_sl!=""){
+          var_list <- append(var_list, input$variable_sl)
+        }
+      }
+
+      if(input$colsplitby_sl!="No split"){
+        var_list <- append(var_list, input$colsplitby_sl)
+      }
+
+      if(input$rowsplitby_sl!="No split"){
+        var_list <- append(var_list, input$rowsplitby_sl)
+      }
+
+      if(input$colorsplitby_sl!="No split"){
+        var_list <- append(var_list, input$colorsplitby_sl)
+      }
+
+
+      str = ""
+      for (e in var_list){
+        str = paste(str, sprintf("%s: %s", e, col_description[[e]]), " / ")
+
+      }
+      return(stringr::str_sub(str,0, -3))
+    })
+
+    output$descriptions <- renderText(descriptions())
+
+
+    output$dist_plot <-
+      plotly::renderPlotly(dist_plot())
+
+    output$scatter_plot <-
+      plotly::renderPlotly(scat_plot())
+
+
 
   })
 }
+
 
 ## To be copied in the UI
 # mod_explore_ui("explore_1")

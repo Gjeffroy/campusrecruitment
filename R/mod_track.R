@@ -41,7 +41,6 @@ mod_track_server <- function(id){
     ns <- session$ns
 
     stages <- reactive({
-      print(input$checkboxstage)
       return(input$checkboxstage)
     })
 

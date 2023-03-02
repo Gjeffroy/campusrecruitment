@@ -23,7 +23,7 @@ mod_home_ui <- function(id){
                     pretty_tabs(texto = "Profil", cor = box_colors[2], icon = "fa fa-user", id = ns("profil_bt"))
              ),
              column(width = 3, align = "center",
-                    pretty_tabs(texto = "Track", cor = box_colors[3], icon ="fa fa-scale-unbalanced-flip", id = ns("bias_bt"))
+                    pretty_tabs(texto = "Track", cor = box_colors[3], icon ="fa fa-shuffle", id = ns("bias_bt"))
              ),
              column(width = 3, align = "center",
                     pretty_tabs(texto = "Credit", cor = box_colors[4], icon = "fa fa-person-praying", id = ns("credit_bt"))
@@ -32,9 +32,8 @@ mod_home_ui <- function(id){
                     br(), br(), br(), br(),
                     wellPanel(
                       HTML("<h1><b>CAMPUS Recruitment</b></h1>"),
-                      HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of indian students taking part in a scheme
-                      runned by their university to help them find a job. The university has set up an employability score based on a test
-                      which is supposed to reflect the chance of getting employed. By comparing student profils, and looking at
+                      HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of indian students.
+                      The university has set up an employability score based on a test which is supposed to reflect the chance of getting employed. By comparing student profils, and looking at
                       at bias and discriminations, this app explore the world of newly on the market young adult.
                                .</h4>")
                     )
