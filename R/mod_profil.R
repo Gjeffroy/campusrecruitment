@@ -22,7 +22,7 @@ mod_profil_ui <- function(id) {
         label = "Choose a category to split on",
         choices = c("No split", cat_col)
       ),
-      htmlOutput(ns("description"))
+      htmlOutput(ns("desc_tt"))
     )),
 
     fluidRow(lapply(1:3, function(i) {
@@ -52,7 +52,7 @@ mod_profil_server <- function(id) {
     ns <- session$ns
 
     # add description of the selected variable
-    output$description <- renderText(
+    output$desc_tt <- renderText(
       if(input$categories_sl!= "No split"){
         sprintf("<b>%s</b>: %s", input$categories_sl, col_description[[input$categories_sl]])
       }

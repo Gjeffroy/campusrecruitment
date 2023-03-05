@@ -150,7 +150,7 @@ a:focus, a:hover {
 
 
 
-.voronoys-block span.description {
+.voronoys-block span.description_cl {
 
     top :30px;
     left: 0;
@@ -182,6 +182,7 @@ a:focus, a:hover {
     opacity: 1;
     transition: font-weight .4s;
 }
+
 
 .img_block_conteiner{
    float: right;

@@ -18,22 +18,22 @@ mod_home_ui <- function(id){
              br(), br(), br(), br(),
              column(width = 3, align = "center",
                     pretty_tabs(texto = "Explore",
-                                description = "Explore freely the data through distribution and scatter plot, and split them in different categories",
+                                text_desc = "Explore freely the data through distribution and scatter plot, and split them in different categories",
                                 cor = box_colors[1], icon = "fa-solid fa-map", id = ns("explore_bt"))
              ),
              column(width = 3, align = "center",
                     pretty_tabs(texto = "Profil",
-                                description = "Check the average profils of student splited by different categories",
+                                text_desc = "Check the average profils of student splited by different categories",
                                 cor = box_colors[2], icon = "fa fa-user", id = ns("profil_bt"))
              ),
              column(width = 3, align = "center",
                     pretty_tabs(texto = "Flow",
-                                description = "Look at how this group of student flows from high school to their first job.",
+                                text_desc = "Look at how this group of student flows from high school to their first job.",
                                 cor = box_colors[3], icon ="fa fa-shuffle", id = ns("bias_bt"))
              ),
              column(width = 3, align = "center",
                     pretty_tabs(texto = "Credit",
-                                description = "Acknowledge other people's work",
+                                text_desc = "Acknowledge other people's work",
                                 cor = box_colors[4], icon = "fa fa-person-praying", id = ns("credit_bt"))
              ),
              column(width = 12,

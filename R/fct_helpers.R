@@ -14,12 +14,12 @@ pretty_box <- function(texto, cor){
             ))
 }
 
-pretty_tabs <- function(texto, description, cor, icon, id){
+pretty_tabs <- function(texto, text_desc, cor, icon, id){
   HTML(paste0('<a id="', id,'" href="#" class="action-button">
                   <div class = "voronoys-block" style = "background-color:', cor, ';">
 
                     <span class = "name">', texto, '</span>
-                    <span class = "description"> ', description,' </span>
+                    <span class = "description_cl"> ', text_desc,' </span>
                     <div class="img_block">
 
                         <div class="img_block_conteiner">
