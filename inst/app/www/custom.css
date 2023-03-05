@@ -120,7 +120,7 @@ a:focus, a:hover {
 .voronoys-block {
     position: relative;
     display: table;
-    width: 310px;
+    width: 20vw;
     height: 130px;
     margin-bottom: 10px;
     font-weight: 700;
@@ -167,7 +167,7 @@ a:focus, a:hover {
     transition: font-weight .4s;
 }
 
-.voronoys-block:hover span.description {
+.voronoys-block:hover span.description_cl {
     position: absolute;
     left: 0;
     font-size: 14px;

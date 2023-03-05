@@ -23,11 +23,11 @@ mod_home_ui <- function(id){
              ),
              column(width = 3, align = "center",
                     pretty_tabs(texto = "Profil",
-                                text_desc = "Check the average profils of student splited by different categories",
+                                text_desc = "Check the average profiles of student split by different categories",
                                 cor = box_colors[2], icon = "fa fa-user", id = ns("profil_bt"))
              ),
              column(width = 3, align = "center",
-                    pretty_tabs(texto = "Flow",
+                    pretty_tabs(texto = "Track",
                                 text_desc = "Look at how this group of student flows from high school to their first job.",
                                 cor = box_colors[3], icon ="fa fa-shuffle", id = ns("bias_bt"))
              ),
@@ -40,10 +40,11 @@ mod_home_ui <- function(id){
                     br(), br(), br(), br(),
                     wellPanel(
                       HTML("<h1><b>CAMPUS Recruitment</b></h1>"),
-                      HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of indian students.
-                      The university has set up an employability score based on a test which is supposed to reflect the chance of getting employed. By comparing student profils, and looking at
-                      at bias and discriminations, this app explore the world of newly on the market young adult.
-                               .</h4>")
+                      HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of Indian students.
+                           The university has set up an employability score based on a test which is supposed to reflect the chance of
+                           getting employed. This app explores the world of newly on the market young adult by comparing their student
+                           profiles and looking at the choices they made, and the score obtained at the different stages
+                           (high school, university, specialization, etc.).</h4>")
                     )
              ),
 
@@ -75,7 +76,7 @@ mod_home_server <- function(id){
     })
 
     observeEvent(input$bias_bt,{
-      tab_react$id <-"Flow"
+      tab_react$id <-"Track"
       tab_react$count <- tab_react$count +1
     })
 
