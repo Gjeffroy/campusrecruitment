@@ -17,14 +17,19 @@ mod_track_ui <- function(id){
              fluidRow(
                column(width = 3,
                       checkboxGroupInput(ns("checkboxstage"),
-                                         label = h3("Select at least two stages in the student track to visualize the flow"),
+                                         label = h3("Stages in a student life."),
                                          choices = list("1.Specialization in Higher Secondary Education" = "hsc_s",
                                                         "2.Field of degree education" = "degree_t",
                                                         "3.Specialisation of degree education" = "specialisation",
-                                                        "4.Employed" = "status")
+                                                        "4.Employment status" = "status")
                       )
                ),
+
                column(width = 9, align = "center",
+                      conditionalPanel(
+                        condition = "input.checkboxstage.length < 2",
+                        ns = ns ,
+                        h3("Select at least two stages", style="text-align: center;")),
                       plotly::plotlyOutput(ns("sankey")))
              )
 
@@ -41,9 +46,12 @@ mod_track_server <- function(id){
     ns <- session$ns
 
     stages <- reactive({
+      print(input$checkboxstage)
+      print(length(input$checkboxstage))
       return(input$checkboxstage)
     })
 
+    output$nb_steps<- renderText(length(stages()))
     output$sankey <- plotly::renderPlotly(plot_sankey_recursive(dataset, stages()))
 
   })

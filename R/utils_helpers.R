@@ -21,29 +21,30 @@ distribution_plot <-
            colsplit_by = "No split",
            rowsplit_by = "No split",
            colorsplit_by = "No split") {
-    ## compute median mean
+
+    ## compute median and mean
     if ((colsplit_by != "No split") & (rowsplit_by != "No split")) {
       STATS <-
         dataset %>% group_by((!!sym(colsplit_by)), (!!sym(rowsplit_by))) %>%
-        dplyr::summarize(Avg = mean((!!sym(var))), Median = median((!!sym(var)))) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
 
     } else if ((colsplit_by != "No split") &
                (rowsplit_by == "No split")) {
       STATS <- dataset %>% group_by((!!sym(colsplit_by))) %>%
-        dplyr::summarize(Avg = mean((!!sym(var))), Median = median((!!sym(var)))) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
 
     }
     else if ((colsplit_by == "No split") &
              (rowsplit_by != "No split")) {
       STATS <- dataset %>% group_by((!!sym(rowsplit_by))) %>%
-        dplyr::summarize(Avg = mean((!!sym(var))), Median = median((!!sym(var)))) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
 
     } else{
       STATS <- dataset %>%
-        dplyr::summarize(Avg = mean((!!sym(var))), Median = median((!!sym(var)))) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
     }
 
@@ -176,7 +177,8 @@ scatter_plot <-
     if (colorsplit_by != "No split") {
       gg <-
         ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var_x)), y = (!!sym(var_y)))) +
-        ggplot2::geom_point(alpha = 0.7, ggplot2::aes(fill=factor((!!sym(colorsplit_by)))))
+        ggplot2::geom_point(alpha = 0.7, ggplot2::aes(fill=factor((!!sym(colorsplit_by))),
+                                                      color=factor((!!sym(colorsplit_by)))))
     } else {
       gg <-
         ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var_x)), y = (!!sym(var_y)))) +
@@ -188,7 +190,8 @@ scatter_plot <-
     gg <- gg +
       ggplot2::geom_smooth() +
       ggplot2::theme(legend.title = ggplot2::element_blank())+
-      ggplot2::scale_fill_brewer(palette = "Accent")
+      ggplot2::scale_fill_brewer(palette = "Accent")+
+      ggplot2::scale_color_brewer(palette = "Accent")
 
     ## facet grid, split by col or / and row
     if ((colsplit_by != "No split") & (rowsplit_by == "No split")) {
@@ -213,33 +216,52 @@ scatter_plot <-
 
 
 ## UTILS for PROFIL module
-plot_radar <- function(stud_prof, edu) {
-  stud_prof_filt <- stud_prof %>%
-    dplyr::filter(hsc_s == edu,
-                  stat == 'median') %>%
-    dplyr::ungroup() %>%
-    dplyr::arrange(status) %>%
-    dplyr::select(-c(hsc_s, stat)) %>%
-    dplyr::group_by(gender, status) %>%
-    dplyr::summarise_all(mean) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(-c(status, gender, salary))
+prepare_radar_data <- function(dataset, splitby){
+
+  if(splitby != "No split"){
+    data <- dataset %>% dplyr::select((!!sym(splitby)),status, ssc_p, hsc_p, degree_p, etest_p, mba_p) %>%
+      dplyr::group_by(!!sym(splitby), status) %>%
+      dplyr::summarise_all(median)%>%
+      dplyr::arrange(dplyr::desc(ssc_p))
+  }else{
+    data <- dataset %>% dplyr::select(status, ssc_p, hsc_p, degree_p, etest_p, mba_p) %>%
+      dplyr::group_by(status) %>%
+      dplyr::summarise_all(median)%>%
+      dplyr::arrange(dplyr::desc(ssc_p))
+  }
+
+  return(data)
+}
+
+plot_radar2 <- function(data, splitby, value){
+
+  if(splitby != "No split"){
+    data <- data %>% filter((!!sym(splitby)) == value)
+    col_num <- 2
+  }else {
+    col_num <- 1
+  }
+
 
   fig <- plotly::plot_ly(
     type = 'scatterpolar',
-    r = as.numeric(stud_prof_filt[2, ]),
-    theta = colnames(stud_prof_filt),
-    fill = 'toself',
-    name = "Place"
+    mode = "markers",
+    r = as.numeric(data[1, -c(1:col_num)]),
+    theta = colnames(data[,-c(1:col_num)]),
+    fill = "toself",
+    name = data[1, col_num]
   )
 
-  fig <-
-    fig %>% plotly::add_trace(
-      r = as.numeric(stud_prof_filt[1, ]),
-      theta = colnames(stud_prof_filt),
-      fill = 'toself',
-      name = "Not place"
-    )
+  for (row in 2:nrow(data)){
+    fig <-
+      fig %>% plotly::add_trace(
+        r = as.numeric(data[row, -c(1:col_num)]),
+        theta = colnames(data[,-c(1:col_num)]),
+        fill = "toself",
+        name = data[row, col_num]
+      )
+
+  }
 
   m <- 80
   fig <- fig %>% plotly::layout(
@@ -257,13 +279,22 @@ plot_radar <- function(stud_prof, edu) {
     showlegend = F
   )
 
+
   return(fig)
+
 }
 
 
-mean_salary <- function(dataset, edu) {
-  salary <- dataset %>%
-    dplyr::filter(hsc_s == edu) %>%
+mean_salary <- function(dataset, var, value) {
+  if(var != 'No split'){
+    data <- dataset %>%
+      dplyr::filter((!!sym(var)) %in% value)
+
+  } else {
+    data <- dataset
+  }
+
+  salary <- data %>%
     dplyr::select(salary) %>%
     tidyr::drop_na() %>%
     dplyr::summarise_at(c('salary'), c(mean))
@@ -271,9 +302,16 @@ mean_salary <- function(dataset, edu) {
   return(sprintf("Mean salary: %sk₹", round(salary / 1000)))
 }
 
-max_salary <- function(dataset, edu) {
-  salary <- dataset %>%
-    dplyr::filter(hsc_s == edu) %>%
+max_salary <- function(dataset, var, value) {
+  if(var != 'No split'){
+    data <- dataset %>%
+      dplyr::filter((!!sym(var)) %in% value)
+
+  } else {
+    data <- dataset
+  }
+
+  salary <- data %>%
     dplyr::select(salary) %>%
     tidyr::drop_na() %>%
     dplyr::summarise_at(c('salary'), c(max))
@@ -281,9 +319,16 @@ max_salary <- function(dataset, edu) {
   return(sprintf("Max salary: %sk₹", round(salary / 1000)))
 }
 
-min_salary <- function(dataset, edu) {
-  salary <- dataset %>%
-    dplyr::filter(hsc_s == edu) %>%
+min_salary <- function(dataset, var, value) {
+  if(var != 'No split'){
+    data <- dataset %>%
+      dplyr::filter((!!sym(var)) %in% value)
+
+  } else {
+    data <- dataset
+  }
+
+  salary <- data %>%
     dplyr::select(salary) %>%
     tidyr::drop_na() %>%
     dplyr::summarise_at(c('salary'), c(min))
@@ -293,9 +338,17 @@ min_salary <- function(dataset, edu) {
 }
 
 
-employ_rate <- function(dataset, edu) {
-  subset_df <- dataset %>%
-    dplyr::filter(hsc_s == edu) %>%
+employ_rate <- function(dataset, var, value) {
+
+  if(var != 'No split'){
+    data <- dataset %>%
+      dplyr::filter((!!sym(var)) %in% value)
+
+  } else {
+    data <- dataset
+  }
+
+  subset_df <-data %>%
     dplyr::select(salary)
 
   not_employed <-  subset_df %>% is.na() %>% sum()
