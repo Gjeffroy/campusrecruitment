@@ -222,6 +222,7 @@ a:focus, a:hover {
 
 hr {
     border-top: 1px solid #D4D4D4;
+    margin-top:0px;
 }
 
 .hr_legend_b{
@@ -236,14 +237,17 @@ hr {
 
 .footer {
     position: fixed;
-    height: 120px;
-    background-color: red;
+    height: 40px;
     bottom: 0px;
     left: 0px;
     right: 0px;
     margin-bottom: 0px;
     background-color: #FFFFFF;
-    text-align: center;
+    text-align: top;
+}
+
+.hr_footer{
+  margin: 0px 0px 0px 0px;
 }
 
 .img_footer{
