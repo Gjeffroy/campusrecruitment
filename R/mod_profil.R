@@ -87,7 +87,7 @@ mod_profil_server <- function(id) {
       output[[paste0('plot', i)]] <-
 
         plotly::renderPlotly(if (i <= nb_categories()) {
-          plot_radar2(data(), input$categories_sl, categories()[i,])
+          plot_radar(data(), input$categories_sl, categories()[i,])
         })
     })
 

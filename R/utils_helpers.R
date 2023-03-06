@@ -14,6 +14,24 @@ library('plotly')
 
 ## UTILS for EXPLORE module
 # distribution plot for continuous variable
+
+
+#' Create a distribution plot
+#'
+#' Create a distribution plot using ggplot and plotly for a given var
+#' and possibility to split on row, col and color.
+#' Median and mean are automatically added as vertical lines
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param var An object of class "string", name of the variable to plot (must be numerical)
+#' @param type An object of class "string", plot type ("count", "density")
+#' @param colsplit_by (optional) An object of class "string", name of the variable to use in facetgrid col (must be categorical)
+#' @param rowsplit_by (optional) An object of class "string", name of the variable to use in facetgrid row (must be categorical)
+#' @param colorsplit_by (optional) An object of class "string", name of the variable to spli by color (must be categorical)
+#' @return Returns an object of class "plotly". the function create a distribution plot based on input
+#'
+#' @examples
+#' distribution_plot(dataset, "hsc_p","count",rowsplit_by = "gender")
+#'
 distribution_plot <-
   function(dataset,
            var,
@@ -110,7 +128,21 @@ distribution_plot <-
   }
 
 
-# bar plot for discrete variable
+
+#' Create a bar plot
+#'
+#' Create a bar plot using ggplot and plotly for a given variable
+#' and possibility to split on row, col and color.
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param var An object of class "string", name of the variable to plot (must be categorical)
+#' @param colsplit_by (optional) An object of class "string", name of the variable to use in facetgrid col (must be categorical)
+#' @param rowsplit_by (optional) An object of class "string", name of the variable to use in facetgrid row (must be categorical)
+#' @param colorsplit_by (optional) An object of class "string", name of the variable to spli by color (must be categorical)
+#' @return Returns an object of class "plotly". the function create a bar plot based on input
+#'
+#' @examples
+#' bar_plot(dataset, "workex", colsplit_by = "gender")
+#'
 bar_plot <- function(subset_df,
                      var,
                      colsplit_by = "No split",
@@ -161,7 +193,20 @@ bar_plot <- function(subset_df,
   return(gg)
 }
 
-
+#' Create a scatter plot
+#'
+#' Create a scatter plot using ggplot and plotly for x and y given variables and possibility to split on row, col and color
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param var_x An object of class "string", name of the variable to plot on x axis (must be numerical)
+#' @param var_y An object of class "string", name of the variable to plot on y axis (must be numerical)
+#' @param colsplit_by (optional) An object of class "string", name of the variable to use in facetgrid col (must be categorical)
+#' @param rowsplit_by (optional) An object of class "string", name of the variable to use in facetgrid row (must be categorical)
+#' @param colorsplit_by (optional) An object of class "string",  name of the variable to spli by color (must be categorical)
+#' @return Returns an object of class "plotly". the function create a scatter plot based on input
+#'
+#' @examples
+#' scatter_plot(dataset, "hsc_s", "salary", colorsplit_by = "gender")
+#'
 scatter_plot <-
   function(subset_df,
            var_x,
@@ -216,6 +261,18 @@ scatter_plot <-
 
 
 ## UTILS for PROFIL module
+
+#' Prepare the data for radar plot
+#'
+#' Prepare the data for radar plot by selecting the right columns
+#' grouping by the split_by var and computing the median
+#' It has an option 'no_split' in case the used want a generaa profil
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param split_by An object of class "string", name of the variable to group by the data before computing the median (must be categorical)
+#' @return Returns an object of class "data.frame". Median for each group and all numerical variables
+#'
+#' @examples
+#' prepare_radar_data(dataset, "gender")
 prepare_radar_data <- function(dataset, splitby){
 
   if(splitby != "No split"){
@@ -233,7 +290,20 @@ prepare_radar_data <- function(dataset, splitby){
   return(data)
 }
 
-plot_radar2 <- function(data, splitby, value){
+
+#' create a radar plot
+#'
+#' create a radar plot using the data from prepare_radar_data()
+#' grouping by the split_by var and filtering on value
+#' It has an option 'no_split' in case the used want a general profil
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param split_by An object of class "string", name of the variable used in prepare_radar_data (must be categorical)
+#' @param value to An object of class "string", filter on a category in the split_by column
+#' @return Returns an object of class "plotly". the radar plot for the split_by category
+#'
+#' @examples
+#' plot_radar(dataset, "gender", "M")
+plot_radar <- function(data, splitby, value){
 
   if(splitby != "No split"){
     data <- data %>% filter((!!sym(splitby)) == value)
@@ -284,11 +354,21 @@ plot_radar2 <- function(data, splitby, value){
 
 }
 
-
-mean_salary <- function(dataset, var, value) {
-  if(var != 'No split'){
+#' compute the mean salary
+#'
+#' compute the mean salary for the category given by value in split_by
+#' It has an option 'no_split' in case the used want a general profil
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param split_by An object of class "string", name of the variable to group_by before computing (must be categorical)
+#' @param value to An object of class "string", filter on a category in the split_by column
+#' @return Returns an object of class "string", with the mean salary in it
+#'
+#' @examples
+#' mean_salary(dataset, "gender", "M")
+mean_salary <- function(dataset, split_by, value) {
+  if(split_by != 'No split'){
     data <- dataset %>%
-      dplyr::filter((!!sym(var)) %in% value)
+      dplyr::filter((!!sym(split_by)) %in% value)
 
   } else {
     data <- dataset
@@ -302,10 +382,22 @@ mean_salary <- function(dataset, var, value) {
   return(sprintf("Mean salary: %sk₹", round(salary / 1000)))
 }
 
-max_salary <- function(dataset, var, value) {
-  if(var != 'No split'){
+
+#' compute the max salary
+#'
+#' compute the max salary for the category given by value in split_by
+#' It has an option 'no_split' in case the used want a general profil
+#' @param dataset An object of class "dataframe", the dataset to plot
+#' @param split_by An object of class "string", name of the variable to group_by before computing (must be categorical)
+#' @param value to An object of class "string", filter on a category in the split_by column
+#' @return Returns an object of class "string", with the max salary in it
+#'
+#' @examples
+#' max_salary(dataset, "gender", "M")
+max_salary <- function(dataset, split_by, value) {
+  if(split_by != 'No split'){
     data <- dataset %>%
-      dplyr::filter((!!sym(var)) %in% value)
+      dplyr::filter((!!sym(split_by)) %in% value)
 
   } else {
     data <- dataset
@@ -319,10 +411,21 @@ max_salary <- function(dataset, var, value) {
   return(sprintf("Max salary: %sk₹", round(salary / 1000)))
 }
 
-min_salary <- function(dataset, var, value) {
-  if(var != 'No split'){
+#' compute the min salary
+#'
+#' compute the min salary for the category given by value in split_by
+#' It has an option 'no_split' in case the used want a general profil
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param split_by An object of class "string", name of the variable to group_by before computing (must be categorical)
+#' @param value to An object of class "string", filter on a category in the split_by column
+#' @return Returns an object of class "string", with the min salary in it
+#'
+#' @examples
+#' min_salary(dataset, "gender", "M")
+min_salary <- function(dataset, split_by, value) {
+  if(split_by != 'No split'){
     data <- dataset %>%
-      dplyr::filter((!!sym(var)) %in% value)
+      dplyr::filter((!!sym(split_by)) %in% value)
 
   } else {
     data <- dataset
@@ -337,12 +440,22 @@ min_salary <- function(dataset, var, value) {
 
 }
 
+#' compute the employment rate
+#'
+#' compute the employment rate for the category given by value in split_by
+#' It has an option 'no_split' in case the used want a general profil
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param split_by An object of class "string", name of the variable to group_by before computing (must be categorical)
+#' @param value An object of class "string", to filter on a category in the split_by column
+#' @return Returns an object of class "string", with the employment rate in it
+#'
+#' @examples
+#' employ_rate(dataset, "gender", "M")
+employ_rate <- function(dataset, split_by, value) {
 
-employ_rate <- function(dataset, var, value) {
-
-  if(var != 'No split'){
+  if(split_by != 'No split'){
     data <- dataset %>%
-      dplyr::filter((!!sym(var)) %in% value)
+      dplyr::filter((!!sym(split_by)) %in% value)
 
   } else {
     data <- dataset
@@ -360,6 +473,19 @@ employ_rate <- function(dataset, var, value) {
 
 
 # UTILS for TRACK module
+#' generate id for each categories
+#'
+#' generate id for each categories used in the sankey plot, id start from 0 to n-1 categories
+#' the function can take a data.frame containing existing id in order to not add them twice
+#' @param data An object of class "data.frame", the dataset to plot
+#' @param where_var An object of class "string", variable to place on the left side of the sankey plot
+#' @param to_var An object of class "string", variable to place on the right side of the sankey plot
+#' @param existing_ids An object of class "data.frame", containing existing id in order to not add them twice
+#' @return Returns an object of class "dataframe", a matching table between
+#' categories in where_var, to_var and the given ids
+#'
+#' @examples
+#' gen_sankey_id(dataset, "hsc_b", "status", existing_ids)
 gen_sankey_id <-
   function(data,
            where_var,
@@ -381,9 +507,19 @@ gen_sankey_id <-
   }
 
 
-
-
-
+#' generate the data use by the sankey plot
+#'
+#' generate id for each categories used in the sankey plot, id start from 0 to n-1 categories
+#' the function can take a data.frame containing the data for the sankey plot
+#' @param data An object of class "data.frame", the dataset to plot
+#' @param where_var An object of class "string", variable to place on the left side of the sankey plot
+#' @param to_var An object of class "string",  variable to place on the right side of the sankey plot
+#' @param where_to_id An object of class "data.frame", the matching table from gen_sankey_id
+#' @param existing_data An object of class "data.frame", generated by a previous call of this function to be stacked with new data
+#' @return Returns an object of class "dataframe", the data to be used in sankey plot
+#'
+#' @examples
+#' gen_sankey_data(dataset, "hsc_b", "status", where_to_id, existing_data)
 gen_sankey_data <-
   function(data,
            where_var,
@@ -411,6 +547,16 @@ gen_sankey_data <-
   }
 
 
+#' generate the sankey plot
+#'
+#' generate the sankey plot based on the data and the ids generated by gen_sankey_data
+#' and gen_sankey_ids
+#' @param sankey_data An object of class "data.frame", the dataset to plot
+#' @param sankey_ids An object of class "data.frame", the matching table between categories and ids
+#' @return Returns an object of class "plotly", the sankey plot
+#'
+#' @examples
+#' plot_sankey(sankey_data, sankey_ids)
 plot_sankey <- function(sankey_data, sankey_ids) {
   fig <- plotly::plot_ly(
     type = "sankey",
@@ -438,7 +584,16 @@ plot_sankey <- function(sankey_data, sankey_ids) {
 
 }
 
-
+#' generate the sankey plot on multiple steps
+#'
+#' combine gen_sankey_ids, gen_sankey_data and plot_sankey to compute a sankey plot
+#' on multiple stages
+#' @param dataset An object of class "data.frame", the dataset to plot
+#' @param stages An object of class "vector", all the stage to use (where and to variables)
+#' @return Returns an object of class "plotly", the sankey plot for multiple stages
+#'
+#' @examples
+#' plot_sankey_recursive(dataset, c("hsc_b", "workex", "status"))
 plot_sankey_recursive <- function(dataset, stages) {
   student_stages <- c('hsc_s', 'degree_t', 'specialisation', 'status')
   sankey_ids = data.frame(name = c())
