@@ -12,4 +12,4 @@ Launch application :
 [`https://ghee.shinyapps.io/campusrecruitment/`](https://ghee.shinyapps.io/campusrecruitment/)
 
 
-![](inst/app/www/screenshot.jpg)
+![](inst/app/www/screenshot.png)
