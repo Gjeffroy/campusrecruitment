@@ -43,7 +43,7 @@ mod_home_ui <- function(id){
                       HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of Indian students.
                            The university has set up an employability score based on a test which measures the chance of
                            getting employed. This app explores the world of young adults newly on the market by comparing their student
-                           profiles and looking at the educational choices they made, and the score obtained at the different stages
+                           profiles, the educational choices they made, and the score obtained at the different stages
                            (high school, university, specialization, etc.).</h4>")
                     )
              ),
