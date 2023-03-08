@@ -9,101 +9,40 @@
 #' @importFrom shiny NS tagList
 mod_explore_ui <- function(id) {
   ns <- NS(id)
-  tagList(tabPanel(
-    title = "Explore",
-    value = "Explore",
+  tagList(
+    tabPanel(
+      title = "Explore",
+      value = "Explore",
 
-    # add shinyjs to get the disable input select option
-    shinyjs::useShinyjs(),
-    hr(),
-    fluidRow(
+      # add shinyjs to get the disable input select option
+      shinyjs::useShinyjs(),
+      # to get the browser dimension
+      # only update on page refresh
+      shinybrowser::detect(),
 
-      # The left side panel with all the input selects
-      column(
-        width = 3,
-        radioButtons(
-          ns("plottype_sl"),
-          label = "Plot Type",
-          choices = c('distribution', 'scatter')
-        ),
-        conditionalPanel(
-          condition = "input.plottype_sl == 'distribution'",
-          ns = ns ,
-          selectInput(
-            ns("variable_sl"),
-            label = "Variable",
-            choices = c("", colnames(dataset)),
-            selected = ""
+      hr(),
+      textOutput(ns("activated_rd")),
+      fillRow(
+        fillCol(
+          fillRow(
+            radioButtons(
+              ns("plottype_sl"),
+              label = "Plot Type",
+              choices = c('distribution', 'scatter'),
+              selected = 'distribution'
+            ),
+            height = "125px"
           ),
-          selectInput(
-            ns("type_sl"),
-            label = "Type",
-            choices = c('count', 'density'),
-          )
+          uiOutput(ns("ui_input")),
+          flex = c(1, 5),
+          height = "calc(100vh - 125px)"
         ),
-        conditionalPanel(
-          condition = "input.plottype_sl == 'scatter'",
-          ns = ns ,
-          selectInput(
-            ns("variable_x_sl"),
-            label = "X variable",
-            choices = c("", numeric_col),
-            selected = ""
-          ),
-          selectInput(
-            ns("variable_y_sl"),
-            label = "Y variable",
-            choices = c("", numeric_col),
-            selected = ""
-          )
-        ),
-        selectInput(
-          ns("colsplitby_sl"),
-          label = "Column split by",
-          choices = c("No split", cat_col),
-          selected = "No split"
-        ),
-        selectInput(
-          ns("rowsplitby_sl"),
-          label = "Row split by",
-          choices = c("No split", cat_col),
-          selected = "No split"
-        ),
-        selectInput(
-          ns("colorsplitby_sl"),
-          label = "Color by",
-          choices = c("No split", cat_col),
-          selected = "No split"
-        )
+        uiOutput(ns("ui_plot")),
+        flex = c(1, 3),
+        height = "calc(100vh - 125px)"
       ),
-
-      # The main panel with all the plots
-      column(
-        width = 9,
-        htmlOutput(ns("descriptions")),
-        conditionalPanel(condition = "(input.plottype_sl == 'distribution') & (input.variable_sl!='')",
-                         ns = ns,
-                         plotlyOutput(ns("dist_plot"))),
-        conditionalPanel(condition = "(input.plottype_sl == 'scatter') & (input.variable_y_sl!='') & (input.variable_x_sl!='')",
-                         ns = ns,
-                         plotlyOutput(ns("scatter_plot"))),
-
-        conditionalPanel(
-          condition = "(input.plottype_sl == 'distribution') & (input.variable_sl=='')",
-          ns = ns ,
-          h3("Select a variable to plot", style = "text-align: center;")
-
-        ),
-        conditionalPanel(
-          condition = "(input.plottype_sl == 'scatter') & !((input.variable_y_sl!='') & (input.variable_x_sl!=''))",
-          ns = ns ,
-          h3("Select variable x and y to plot", style = "text-align: center;")
-        ),
-        align = "center"
-      )
-
     )
-  ))
+  )
 }
 
 #' explore Server Functions
@@ -125,9 +64,10 @@ mod_explore_server <- function(id) {
 
     })
 
-    # create distribution or bar plot base on input if scatter mode is on
-    # and if the selected variable is categorical or numeric
-    dist_plot <- reactive({
+    # create plot
+    plot <- reactive({
+      # create distribution or bar plot base on input if scatter mode is on
+      # and if the selected variable is categorical or numeric
       if (input$plottype_sl == "distribution") {
         if (input$variable_sl %in% cat_col) {
           bar_plot(
@@ -135,7 +75,8 @@ mod_explore_server <- function(id) {
             input$variable_sl,
             colsplit_by = input$colsplitby_sl,
             rowsplit_by = input$rowsplitby_sl,
-            colorsplit_by = input$colorsplitby_sl
+            colorsplit_by = input$colorsplitby_sl,
+            plot_height = as.numeric(shinybrowser::get_height()) - 180
           )
         } else {
           distribution_plot(
@@ -144,23 +85,22 @@ mod_explore_server <- function(id) {
             type = input$type_sl,
             colsplit_by = input$colsplitby_sl,
             rowsplit_by = input$rowsplitby_sl,
-            colorsplit_by = input$colorsplitby_sl
+            colorsplit_by = input$colorsplitby_sl,
+            plot_height = as.numeric(shinybrowser::get_height()) - 180
           )
 
         }
       }
-    })
-
-    # create scatter plot base on input if scatter mode is on
-    scat_plot <- reactive({
-      if (input$plottype_sl == "scatter") {
+      # create scatter plot base on input if scatter mode is on
+      else if (input$plottype_sl == "scatter") {
         scatter_plot(
           dataset,
           input$variable_x_sl,
           input$variable_y_sl,
           colsplit_by = input$colsplitby_sl,
           rowsplit_by = input$rowsplitby_sl,
-          colorsplit_by = input$colorsplitby_sl
+          colorsplit_by = input$colorsplitby_sl,
+          plot_height = as.numeric(shinybrowser::get_height()) - 180
         )
 
       }
@@ -214,12 +154,107 @@ mod_explore_server <- function(id) {
     output$descriptions <- renderText(descriptions())
 
     # create the plotly object and store them as output
-    output$dist_plot <-
-      plotly::renderPlotly(dist_plot())
-    output$scatter_plot <-
-      plotly::renderPlotly(scat_plot())
+    output$plot <-
+      plotly::renderPlotly(plot())
+
+
+    # generate the inputs on the left side panel
+    output$ui_input <- renderUI({
+      fillRow(
+        fillCol(
+          if (input$plottype_sl == 'distribution') {
+            selectInput(
+              ns("variable_sl"),
+              label = "Variable",
+              choices = c("", colnames(dataset)),
+              selected = ""
+            )
+          } else {
+            selectInput(
+              ns("variable_x_sl"),
+              label = "X variable",
+              choices = c("", numeric_col),
+              selected = ""
+            )
+          },
+          if (input$plottype_sl == 'distribution') {
+            selectInput(ns("type_sl"),
+                        label = "Type",
+                        choices = c('count', 'density'),
+            )
+          } else {
+            selectInput(
+              ns("variable_y_sl"),
+              label = "X variable",
+              choices = c("", numeric_col),
+              selected = ""
+            )
+          },
+
+          selectInput(
+            ns("colsplitby_sl"),
+            label = "Column split by",
+            choices = c("No split", cat_col),
+            selected = "No split"
+          ),
+          selectInput(
+            ns("rowsplitby_sl"),
+            label = "Row split by",
+            choices = c("No split", cat_col),
+            selected = "No split"
+          ),
+          selectInput(
+            ns("colorsplitby_sl"),
+            label = "Color by",
+            choices = c("No split", cat_col),
+            selected = "No split"
+          ),
+          flex = 1,
+          height = "calc(100vh - 250px)"
+
+        ),
+        height = "calc(100vh - 250px)"
+      )
+
+    })
+
+
+    # generate the output on the main panel
+    output$ui_plot <- renderUI({
+      if (input$plottype_sl == 'distribution') {
+        validate(need(input$variable_sl, 'Select a var to plot'))
+
+        fillCol(
+          htmlOutput(ns("descriptions")),
+          plotly::plotlyOutput(ns("plot")),
+          flex = c(1, 15),
+          height = "calc(100vh - 160px)"
+        )
+      } else if (input$plottype_sl == 'scatter') {
+        validate(
+          need(input$variable_x_sl, 'Select a x var to plot'),
+          need(input$variable_y_sl, 'Select a y var to plot')
+        )
+        fillCol(
+          fillRow(htmlOutput(ns(
+            "descriptions"
+          )),
+          height = "20px"),
+          fillRow(plotly::plotlyOutput(ns("plot")),
+                  height = "calc(100vh - 160px)")
+          ,
+          flex = c(1, 15),
+          height = "calc(100vh - 160px)"
+        )
+      }
+
+
+    })
 
   })
+
+
+
 }
 
 
