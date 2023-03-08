@@ -9,6 +9,14 @@
     border: none;
 }
 
+.navbar-static-top{
+  position: fixed;
+  top:0px;
+  left:0px;
+  right:
+  0px;
+}
+
 .navbar .navbar-nav {
     float: right;
     padding-right: 100px;
@@ -199,9 +207,23 @@ a:focus, a:hover {
 }
 
 .container-fluid {
+
     padding-left: 10px;
     padding-right: 10px;
 }
+
+.tab-pane {
+
+    position:fixed;
+    top: 65px;
+    left: 0px;
+    right:0px;
+    overflow: hidden;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+
 
 /* sidebar */
 
@@ -228,11 +250,13 @@ hr {
 .hr_legend_b{
   border-top: 3px solid #1f77b4 !important;
   border-radius: 1px;
+  width:40px;
 }
 
 .hr_legend_o{
   border-top: 3px solid #ff7f0e !important;
   border-radius: 1px;
+  width:40px;
 }
 
 .footer {
@@ -330,3 +354,7 @@ th {
 .leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
     position: sticky !important;
 }
+
+
+
+

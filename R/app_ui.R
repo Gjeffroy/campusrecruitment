@@ -22,6 +22,8 @@ app_ui <- function(request) {
         HTML('<link rel="icon", href="img/logo.png",
                         type="image/png" />')
       )),
+
+
       div(
         style = "padding: 1px 0px; width: '100%'; height:5px",
         titlePanel(title = "", windowTitle = "Campus Explorer"),
@@ -31,7 +33,7 @@ app_ui <- function(request) {
       ##-- Header ----
       navbarPage(
         title = div(img(src = "www/logo.png",
-                        height = "60px"), style = "padding-left:100px;"),
+                        height = "40px"), style = "padding-left:100px;"),
         id = "navbar",
         selected = "Home",
         theme = "www/custom.css",

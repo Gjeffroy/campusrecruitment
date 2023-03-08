@@ -13,7 +13,6 @@ mod_track_ui <- function(id){
     tabPanel(title = "Track",
              value = "track",
              hr(),
-             br(), br(),
              fluidRow(
                column(width = 3,
                       checkboxGroupInput(ns("checkboxstage"),

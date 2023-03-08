@@ -10,7 +10,8 @@ distribution_plot(
   type = "count",
   colsplit_by = "No split",
   rowsplit_by = "No split",
-  colorsplit_by = "No split"
+  colorsplit_by = "No split",
+  plot_height = 470
 )
 }
 \arguments{

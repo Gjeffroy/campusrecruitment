@@ -4,7 +4,7 @@
 \alias{plot_radar}
 \title{create a radar plot}
 \usage{
-plot_radar(data, splitby, value)
+plot_radar(data, splitby, value, plot_height = "200px")
 }
 \arguments{
 \item{value}{to An object of class "string", filter on a category in the split_by column}

@@ -12,6 +12,7 @@ Imports:
     pkgload,
     plotly,
     shiny (>= 1.7.4),
+    shinybrowser,
     shinyjs,
     tidyr
 Encoding: UTF-8

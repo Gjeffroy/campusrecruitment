@@ -22,6 +22,8 @@ usethis::use_package('ggplot2')
 usethis::use_package('tidyr')
 usethis::use_package('stringr')
 usethis::use_package('shinyjs')
+usethis::use_package('shinybrowser')
+usethis::use_package('shinyWidgets')
 # attachment::att_amend_desc()
 
 ## Add modules ----

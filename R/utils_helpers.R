@@ -38,7 +38,8 @@ distribution_plot <-
            type = "count",
            colsplit_by = "No split",
            rowsplit_by = "No split",
-           colorsplit_by = "No split") {
+           colorsplit_by = "No split",
+           plot_height = 470) {
 
     ## compute median and mean
     if ((colsplit_by != "No split") & (rowsplit_by != "No split")) {
@@ -121,7 +122,8 @@ distribution_plot <-
     ## convert to a plotly object
     gg <- plotly::ggplotly(gg) %>%
       plotly::layout(plot_bgcolor = '#e5ecf6',
-                     height = 470)
+                     height = plot_height
+                     )
 
     return(gg)
 
@@ -147,7 +149,8 @@ bar_plot <- function(subset_df,
                      var,
                      colsplit_by = "No split",
                      rowsplit_by = "No split",
-                     colorsplit_by = "No split") {
+                     colorsplit_by = "No split",
+                     plot_height = 470) {
   # color split
   if (colorsplit_by != "No split") {
     gg <- ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var)),
@@ -188,7 +191,7 @@ bar_plot <- function(subset_df,
   # convert to a plotly object
   gg <- plotly::ggplotly(gg) %>%
     plotly::layout(plot_bgcolor = '#e5ecf6',
-                   height = 470)
+                   height = plot_height)
 
   return(gg)
 }
@@ -213,7 +216,13 @@ scatter_plot <-
            var_y,
            colsplit_by = "No split",
            rowsplit_by = "No split",
-           colorsplit_by = "No split"){
+           colorsplit_by = "No split",
+           plot_height = 470){
+
+    validate(
+      need(var_x, 'Select a x var to plot'),
+      need(var_y, 'Select a y var to plot')
+    )
 
 
 
@@ -254,7 +263,7 @@ scatter_plot <-
     # convert to plotly object
     gg <- plotly::ggplotly(gg) %>%
       plotly::layout(plot_bgcolor = '#e5ecf6',
-                     height = 470)
+                     height = plot_height)
 
     return(gg)
   }
@@ -303,7 +312,7 @@ prepare_radar_data <- function(dataset, splitby){
 #'
 #' @examples
 #' plot_radar(dataset, "gender", "M")
-plot_radar <- function(data, splitby, value){
+plot_radar <- function(data, splitby, value, plot_height = "200px"){
 
   if(splitby != "No split"){
     data <- data %>% filter((!!sym(splitby)) == value)
@@ -319,7 +328,8 @@ plot_radar <- function(data, splitby, value){
     r = as.numeric(data[1, -c(1:col_num)]),
     theta = colnames(data[,-c(1:col_num)]),
     fill = "toself",
-    name = data[1, col_num]
+    name = data[1, col_num],
+    height = plot_height
   )
 
   for (row in 2:nrow(data)){
@@ -333,20 +343,23 @@ plot_radar <- function(data, splitby, value){
 
   }
 
-  m <- 80
+  m <- 15
   fig <- fig %>% plotly::layout(
     margin = list(
       l = m,
       r = m,
       t = m,
-      b = m
+      b = 40
     ),
     polar = list(radialaxis = list(
       visible = T,
       range = c(0, 100),
       title = "Score"
     )),
-    showlegend = F
+    showlegend = T,
+    legend = list(orientation = "h",   # show entries horizontally
+                  xanchor = "center",  # use center of legend as anchor
+                  x = 0.5)
   )
 
 
