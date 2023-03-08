@@ -13,40 +13,43 @@ mod_home_ui <- function(id){
     tabPanel(title = "Home",
              value = "home",
              hr(),
-             br(), br(),
-             HTML("<h1><center>WELCOME TO <b>Campus Recruitment</b> .... </center></h1>"),
-             br(), br(), br(), br(),
-             column(width = 3, align = "center",
-                    pretty_tabs(texto = "Explore",
-                                text_desc = "Explore freely the data through distribution and scatter plot, and split them in different categories",
-                                cor = box_colors[1], icon = "fa-solid fa-map", id = ns("explore_bt"))
-             ),
-             column(width = 3, align = "center",
-                    pretty_tabs(texto = "Profil",
-                                text_desc = "Check the average profiles of student split by different categories",
-                                cor = box_colors[2], icon = "fa fa-user", id = ns("profil_bt"))
-             ),
-             column(width = 3, align = "center",
-                    pretty_tabs(texto = "Track",
-                                text_desc = "Look at how this group of student flows from high school to their first job.",
-                                cor = box_colors[3], icon ="fa fa-shuffle", id = ns("bias_bt"))
-             ),
-             column(width = 3, align = "center",
-                    pretty_tabs(texto = "Credit",
-                                text_desc = "Acknowledge other people's work",
-                                cor = box_colors[4], icon = "fa fa-person-praying", id = ns("credit_bt"))
-             ),
-             column(width = 12,
-                    br(), br(), br(), br(),
-                    wellPanel(
-                      HTML("<h1><b>CAMPUS Recruitment</b></h1>"),
-                      HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of Indian students.
-                           The university has set up an employability score based on a test which measures the chance of
-                           getting employed. This app explores the world of young adults newly on the market by comparing their student
-                           profiles, the educational choices they made, and the score obtained at the different stages
-                           (high school, university, specialization, etc.).</h4>")
-                    )
-             ),
+             fillCol(
+               fillRow(HTML("<h1><center>WELCOME TO <b>Campus Recruitment</b> .... </center></h1>")),
+               fillRow(
+
+                 pretty_tabs(texto = "Explore",
+                             text_desc = "Explore freely the data through distribution and scatter plot, and split them in different categories",
+                             cor = box_colors[1], icon = "fa-solid fa-map", id = ns("explore_bt"))
+                 ,
+
+                 pretty_tabs(texto = "Profil",
+                             text_desc = "Check the average profiles of student split by different categories",
+                             cor = box_colors[2], icon = "fa fa-user", id = ns("profil_bt"))
+                 ,
+
+                 pretty_tabs(texto = "Track",
+                             text_desc = "Look at how this group of student flows from high school to their first job.",
+                             cor = box_colors[3], icon ="fa fa-shuffle", id = ns("bias_bt"))
+                 ,
+
+                 pretty_tabs(texto = "Credit",
+                             text_desc = "Acknowledge other people's work",
+                             cor = box_colors[4], icon = "fa fa-person-praying", id = ns("credit_bt")),
+                 align = "center",
+
+               ),
+               fillRow(
+                 wellPanel(
+                            HTML("<h1><b>CAMPUS Recruitment</b></h1>"),
+                            HTML("<h4><b>Campus Recruitment</b> looks at the employability of a group of Indian students.
+                                 The university has set up an employability score based on a test which measures the chance of
+                                 getting employed. This app explores the world of young adults newly on the market by comparing
+                                 their student profiles, the educational choices they made, and the score obtained at the different
+                                 stages (high school, university, specialization, etc.).</h4>")
+                          )
+               ),
+               flex = c(1,2,3), height = "calc(100vh - 125px)"
+             )
 
     )
 

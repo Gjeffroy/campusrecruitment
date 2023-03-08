@@ -5,7 +5,7 @@ account: ghee
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8431415
-bundleId: 6920900
+bundleId: 6930592
 url: https://ghee.shinyapps.io/campusrecruitment/
-when: 1678100123.92235
-lastSyncTime: 1678100123.92239
+when: 1678275135.53048
+lastSyncTime: 1678275135.53049

@@ -38,31 +38,49 @@ distribution_plot <-
            type = "count",
            colsplit_by = "No split",
            rowsplit_by = "No split",
-           colorsplit_by = "No split") {
+           colorsplit_by = "No split",
+           plot_height = 470) {
+
+    # check that var is defined
+    validate(need(var, ''))
+
+    # prevent splitting on same variable for col and row
+    if (colsplit_by != "No split" & rowsplit_by != "No split") {
+      validate(
+        need(
+          colsplit_by != rowsplit_by,
+          'Choose different variables to split by row and column'
+        ),
+      )
+    }
 
     ## compute median and mean
     if ((colsplit_by != "No split") & (rowsplit_by != "No split")) {
       STATS <-
         dataset %>% group_by((!!sym(colsplit_by)), (!!sym(rowsplit_by))) %>%
-        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)), na.rm = TRUE),
+                         Median = median((!!sym(var)), na.rm = TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
 
     } else if ((colsplit_by != "No split") &
                (rowsplit_by == "No split")) {
       STATS <- dataset %>% group_by((!!sym(colsplit_by))) %>%
-        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)), na.rm = TRUE),
+                         Median = median((!!sym(var)), na.rm = TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
 
     }
     else if ((colsplit_by == "No split") &
              (rowsplit_by != "No split")) {
       STATS <- dataset %>% group_by((!!sym(rowsplit_by))) %>%
-        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)), na.rm = TRUE),
+                         Median = median((!!sym(var)), na.rm = TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
 
     } else{
       STATS <- dataset %>%
-        dplyr::summarize(Avg = mean((!!sym(var)),na.rm=TRUE), Median = median((!!sym(var)),na.rm=TRUE)) %>%
+        dplyr::summarize(Avg = mean((!!sym(var)), na.rm = TRUE),
+                         Median = median((!!sym(var)), na.rm = TRUE)) %>%
         tidyr::pivot_longer(Avg:Median, names_to = "Stat", values_to = "Value")
     }
 
@@ -121,7 +139,7 @@ distribution_plot <-
     ## convert to a plotly object
     gg <- plotly::ggplotly(gg) %>%
       plotly::layout(plot_bgcolor = '#e5ecf6',
-                     height = 470)
+                     height = plot_height)
 
     return(gg)
 
@@ -147,7 +165,24 @@ bar_plot <- function(subset_df,
                      var,
                      colsplit_by = "No split",
                      rowsplit_by = "No split",
-                     colorsplit_by = "No split") {
+                     colorsplit_by = "No split",
+                     plot_height = 470) {
+
+
+  # check that var is defined
+  validate(need(var, ''))
+
+  # prevent splitting on same variable for col and row
+  if (colsplit_by != "No split" & rowsplit_by != "No split") {
+    validate(
+      need(
+        colsplit_by != rowsplit_by,
+        'Choose different variables to split by row and column'
+      ),
+    )
+  }
+
+
   # color split
   if (colorsplit_by != "No split") {
     gg <- ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var)),
@@ -182,13 +217,13 @@ bar_plot <- function(subset_df,
 
   # customize label and legend and color scale
   gg <- gg +
-    ggplot2::theme(legend.title = ggplot2::element_blank())+
+    ggplot2::theme(legend.title = ggplot2::element_blank()) +
     ggplot2::scale_fill_brewer(palette = "Accent")
 
   # convert to a plotly object
   gg <- plotly::ggplotly(gg) %>%
     plotly::layout(plot_bgcolor = '#e5ecf6',
-                   height = 470)
+                   height = plot_height)
 
   return(gg)
 }
@@ -213,17 +248,33 @@ scatter_plot <-
            var_y,
            colsplit_by = "No split",
            rowsplit_by = "No split",
-           colorsplit_by = "No split"){
+           colorsplit_by = "No split",
+           plot_height = 470) {
+    # make sure var x and y are defined
+    # otherwise cause a error message to display due to dynamic input generation in the UI
+    validate(need(var_x, ''),
+             need(var_y, ''))
 
-
-
+    # prevent splitting on same variable for col and row
+    if (colsplit_by != "No split" & rowsplit_by != "No split") {
+      validate(
+        need(
+          colsplit_by != rowsplit_by,
+          'Choose different variables to split by row and column'
+        ),
+      )
+    }
 
     # split by color
     if (colorsplit_by != "No split") {
       gg <-
         ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var_x)), y = (!!sym(var_y)))) +
-        ggplot2::geom_point(alpha = 0.7, ggplot2::aes(fill=factor((!!sym(colorsplit_by))),
-                                                      color=factor((!!sym(colorsplit_by)))))
+        ggplot2::geom_point(alpha = 0.7, ggplot2::aes(fill = factor((
+          !!sym(colorsplit_by)
+        )),
+        color = factor((
+          !!sym(colorsplit_by)
+        ))))
     } else {
       gg <-
         ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var_x)), y = (!!sym(var_y)))) +
@@ -234,8 +285,8 @@ scatter_plot <-
     # add geom smooth, color scale and remove title
     gg <- gg +
       ggplot2::geom_smooth() +
-      ggplot2::theme(legend.title = ggplot2::element_blank())+
-      ggplot2::scale_fill_brewer(palette = "Accent")+
+      ggplot2::theme(legend.title = ggplot2::element_blank()) +
+      ggplot2::scale_fill_brewer(palette = "Accent") +
       ggplot2::scale_color_brewer(palette = "Accent")
 
     ## facet grid, split by col or / and row
@@ -254,7 +305,7 @@ scatter_plot <-
     # convert to plotly object
     gg <- plotly::ggplotly(gg) %>%
       plotly::layout(plot_bgcolor = '#e5ecf6',
-                     height = 470)
+                     height = plot_height)
 
     return(gg)
   }
@@ -273,17 +324,18 @@ scatter_plot <-
 #'
 #' @examples
 #' prepare_radar_data(dataset, "gender")
-prepare_radar_data <- function(dataset, splitby){
-
-  if(splitby != "No split"){
-    data <- dataset %>% dplyr::select((!!sym(splitby)),status, ssc_p, hsc_p, degree_p, etest_p, mba_p) %>%
+prepare_radar_data <- function(dataset, splitby) {
+  if (splitby != "No split") {
+    data <-
+      dataset %>% dplyr::select((!!sym(splitby)), status, ssc_p, hsc_p, degree_p, etest_p, mba_p) %>%
       dplyr::group_by(!!sym(splitby), status) %>%
-      dplyr::summarise_all(median)%>%
+      dplyr::summarise_all(median) %>%
       dplyr::arrange(dplyr::desc(ssc_p))
-  }else{
-    data <- dataset %>% dplyr::select(status, ssc_p, hsc_p, degree_p, etest_p, mba_p) %>%
+  } else{
+    data <-
+      dataset %>% dplyr::select(status, ssc_p, hsc_p, degree_p, etest_p, mba_p) %>%
       dplyr::group_by(status) %>%
-      dplyr::summarise_all(median)%>%
+      dplyr::summarise_all(median) %>%
       dplyr::arrange(dplyr::desc(ssc_p))
   }
 
@@ -303,12 +355,11 @@ prepare_radar_data <- function(dataset, splitby){
 #'
 #' @examples
 #' plot_radar(dataset, "gender", "M")
-plot_radar <- function(data, splitby, value){
-
-  if(splitby != "No split"){
+plot_radar <- function(data, splitby, value, plot_height = "200px") {
+  if (splitby != "No split") {
     data <- data %>% filter((!!sym(splitby)) == value)
     col_num <- 2
-  }else {
+  } else {
     col_num <- 1
   }
 
@@ -317,36 +368,44 @@ plot_radar <- function(data, splitby, value){
     type = 'scatterpolar',
     mode = "markers",
     r = as.numeric(data[1, -c(1:col_num)]),
-    theta = colnames(data[,-c(1:col_num)]),
+    theta = colnames(data[, -c(1:col_num)]),
     fill = "toself",
-    name = data[1, col_num]
+    name = data[1, col_num],
+    height = plot_height
   )
 
-  for (row in 2:nrow(data)){
+  for (row in 2:nrow(data)) {
     fig <-
       fig %>% plotly::add_trace(
         r = as.numeric(data[row, -c(1:col_num)]),
-        theta = colnames(data[,-c(1:col_num)]),
+        theta = colnames(data[, -c(1:col_num)]),
         fill = "toself",
         name = data[row, col_num]
       )
 
   }
 
-  m <- 80
+  m <- 15
   fig <- fig %>% plotly::layout(
     margin = list(
       l = m,
       r = m,
       t = m,
-      b = m
+      b = 40
     ),
     polar = list(radialaxis = list(
       visible = T,
       range = c(0, 100),
       title = "Score"
     )),
-    showlegend = F
+    showlegend = T,
+    legend = list(
+      orientation = "h",
+      # show entries horizontally
+      xanchor = "center",
+      # use center of legend as anchor
+      x = 0.5
+    )
   )
 
 
@@ -366,7 +425,7 @@ plot_radar <- function(data, splitby, value){
 #' @examples
 #' mean_salary(dataset, "gender", "M")
 mean_salary <- function(dataset, split_by, value) {
-  if(split_by != 'No split'){
+  if (split_by != 'No split') {
     data <- dataset %>%
       dplyr::filter((!!sym(split_by)) %in% value)
 
@@ -395,7 +454,7 @@ mean_salary <- function(dataset, split_by, value) {
 #' @examples
 #' max_salary(dataset, "gender", "M")
 max_salary <- function(dataset, split_by, value) {
-  if(split_by != 'No split'){
+  if (split_by != 'No split') {
     data <- dataset %>%
       dplyr::filter((!!sym(split_by)) %in% value)
 
@@ -423,7 +482,7 @@ max_salary <- function(dataset, split_by, value) {
 #' @examples
 #' min_salary(dataset, "gender", "M")
 min_salary <- function(dataset, split_by, value) {
-  if(split_by != 'No split'){
+  if (split_by != 'No split') {
     data <- dataset %>%
       dplyr::filter((!!sym(split_by)) %in% value)
 
@@ -452,8 +511,7 @@ min_salary <- function(dataset, split_by, value) {
 #' @examples
 #' employ_rate(dataset, "gender", "M")
 employ_rate <- function(dataset, split_by, value) {
-
-  if(split_by != 'No split'){
+  if (split_by != 'No split') {
     data <- dataset %>%
       dplyr::filter((!!sym(split_by)) %in% value)
 
@@ -461,7 +519,7 @@ employ_rate <- function(dataset, split_by, value) {
     data <- dataset
   }
 
-  subset_df <-data %>%
+  subset_df <- data %>%
     dplyr::select(salary)
 
   not_employed <-  subset_df %>% is.na() %>% sum()
@@ -557,32 +615,34 @@ gen_sankey_data <-
 #'
 #' @examples
 #' plot_sankey(sankey_data, sankey_ids)
-plot_sankey <- function(sankey_data, sankey_ids) {
-  fig <- plotly::plot_ly(
-    type = "sankey",
-    orientation = "h",
+plot_sankey <-
+  function(sankey_data, sankey_ids, plot_height = "470px") {
+    fig <- plotly::plot_ly(
+      type = "sankey",
+      orientation = "h",
 
-    node = list(
-      label = sankey_ids$name,
+      node = list(
+        label = sankey_ids$name,
 
-      pad = 15,
-      thickness = 20,
-      line = list(color = "black",
-                  width = 0.5)
-    ),
+        pad = 15,
+        thickness = 20,
+        line = list(color = "black",
+                    width = 0.5)
+      ),
 
-    link = list(
-      source = sankey_data$where_id,
-      target = sankey_data$to_id,
-      value =  sankey_data$n
+      link = list(
+        source = sankey_data$where_id,
+        target = sankey_data$to_id,
+        value =  sankey_data$n
+      )
     )
-  )
-  fig <- fig %>% plotly::layout(title = "",
-                                font = list(size = 10))
+    fig <- fig %>% plotly::layout(title = "",
+                                  font = list(size = 10),
+                                  height = plot_height)
 
-  return(fig)
+    return(fig)
 
-}
+  }
 
 #' generate the sankey plot on multiple steps
 #'
@@ -594,11 +654,14 @@ plot_sankey <- function(sankey_data, sankey_ids) {
 #'
 #' @examples
 #' plot_sankey_recursive(dataset, c("hsc_b", "workex", "status"))
-plot_sankey_recursive <- function(dataset, stages) {
-  student_stages <- c('hsc_s', 'degree_t', 'specialisation', 'status')
-  sankey_ids = data.frame(name = c())
-  sankey_data <- NULL
-  if (length(stages) > 1) {
+plot_sankey_recursive <-
+  function(dataset, stages, plot_height = "470px") {
+    student_stages <- c('hsc_s', 'degree_t', 'specialisation', 'status')
+    sankey_ids = data.frame(name = c())
+    sankey_data <- NULL
+
+    validate(need(length(stages) > 1, 'Choose at least two stages to visualize'),)
+
     for (i in seq(length(stages) - 1)) {
       where_name <- stages[i]
       to_name <- stages[i + 1]
@@ -609,9 +672,10 @@ plot_sankey_recursive <- function(dataset, stages) {
         gen_sankey_data(dataset, where_name, to_name, sankey_ids, sankey_data)
     }
 
-    fig <- plot_sankey(sankey_data, sankey_ids)
+    fig <-
+      plot_sankey(sankey_data, sankey_ids, plot_height = plot_height)
     return(fig)
+
+
+
   }
-
-
-}
