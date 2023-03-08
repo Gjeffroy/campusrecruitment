@@ -1,6 +1,6 @@
 Package: campusrecruitment
 Title: Campus Recruitment
-Version: 1.0.0.000
+Version: 1.1.0.000
 Authors@R: person('Guillaume', 'Jeffroy', email = 'guillaume.jeffroy@gmail.com', role = c('cre', 'aut'))
 Description: A Shiny app that explore the campus recruitment dataset.
 License: MIT + file LICENSE
@@ -12,7 +12,9 @@ Imports:
     pkgload,
     plotly,
     shiny (>= 1.7.4),
+    shinybrowser,
     shinyjs,
+    shinyWidgets,
     tidyr
 Encoding: UTF-8
 LazyData: true
