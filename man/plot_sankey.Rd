@@ -4,7 +4,7 @@
 \alias{plot_sankey}
 \title{generate the sankey plot}
 \usage{
-plot_sankey(sankey_data, sankey_ids)
+plot_sankey(sankey_data, sankey_ids, plot_height = "470px")
 }
 \arguments{
 \item{sankey_data}{An object of class "data.frame", the dataset to plot}

@@ -4,7 +4,7 @@
 \alias{plot_sankey_recursive}
 \title{generate the sankey plot on multiple steps}
 \usage{
-plot_sankey_recursive(dataset, stages)
+plot_sankey_recursive(dataset, stages, plot_height = "470px")
 }
 \arguments{
 \item{dataset}{An object of class "data.frame", the dataset to plot}

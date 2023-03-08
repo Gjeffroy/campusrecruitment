@@ -41,6 +41,14 @@ distribution_plot <-
            colorsplit_by = "No split",
            plot_height = 470) {
 
+
+    # prevent splitting on same variable for col and row
+    if(colsplit_by != "No split" & rowsplit_by != "No split"){
+      validate(
+        need(colsplit_by != rowsplit_by, 'Choose different variable to split by row and column'),
+      )
+    }
+
     ## compute median and mean
     if ((colsplit_by != "No split") & (rowsplit_by != "No split")) {
       STATS <-
@@ -151,6 +159,15 @@ bar_plot <- function(subset_df,
                      rowsplit_by = "No split",
                      colorsplit_by = "No split",
                      plot_height = 470) {
+
+  # prevent splitting on same variable for col and row
+  if(colsplit_by != "No split" & rowsplit_by != "No split"){
+    validate(
+      need(colsplit_by != rowsplit_by, 'Choose different variable to split by row and column'),
+    )
+  }
+
+
   # color split
   if (colorsplit_by != "No split") {
     gg <- ggplot2::ggplot(subset_df, ggplot2::aes(x = (!!sym(var)),
@@ -219,13 +236,19 @@ scatter_plot <-
            colorsplit_by = "No split",
            plot_height = 470){
 
+    # make sure var x and y are defined
+    # otherwise cause a error message to display due to dynamic input generation in the UI
     validate(
       need(var_x, 'Select a x var to plot'),
       need(var_y, 'Select a y var to plot')
     )
 
-
-
+    # prevent splitting on same variable for col and row
+    if(colsplit_by != "No split" & rowsplit_by != "No split"){
+      validate(
+        need(colsplit_by != rowsplit_by, 'Choose different variable to split by row and column'),
+      )
+    }
 
     # split by color
     if (colorsplit_by != "No split") {
@@ -570,7 +593,7 @@ gen_sankey_data <-
 #'
 #' @examples
 #' plot_sankey(sankey_data, sankey_ids)
-plot_sankey <- function(sankey_data, sankey_ids) {
+plot_sankey <- function(sankey_data, sankey_ids, plot_height ="470px") {
   fig <- plotly::plot_ly(
     type = "sankey",
     orientation = "h",
@@ -591,7 +614,8 @@ plot_sankey <- function(sankey_data, sankey_ids) {
     )
   )
   fig <- fig %>% plotly::layout(title = "",
-                                font = list(size = 10))
+                                font = list(size = 10),
+                                height = plot_height)
 
   return(fig)
 
@@ -607,7 +631,7 @@ plot_sankey <- function(sankey_data, sankey_ids) {
 #'
 #' @examples
 #' plot_sankey_recursive(dataset, c("hsc_b", "workex", "status"))
-plot_sankey_recursive <- function(dataset, stages) {
+plot_sankey_recursive <- function(dataset, stages, plot_height = "470px") {
   student_stages <- c('hsc_s', 'degree_t', 'specialisation', 'status')
   sankey_ids = data.frame(name = c())
   sankey_data <- NULL
@@ -622,7 +646,7 @@ plot_sankey_recursive <- function(dataset, stages) {
         gen_sankey_data(dataset, where_name, to_name, sankey_ids, sankey_data)
     }
 
-    fig <- plot_sankey(sankey_data, sankey_ids)
+    fig <- plot_sankey(sankey_data, sankey_ids, plot_height= plot_height)
     return(fig)
   }
 

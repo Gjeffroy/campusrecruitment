@@ -23,17 +23,19 @@ mod_explore_ui <- function(id) {
       hr(),
       textOutput(ns("activated_rd")),
       fillRow(
-        fillCol(fillRow(
-          radioButtons(
-            ns("plottype_sl"),
-            label = "Plot Type",
-            choices = c('distribution', 'scatter'),
-            selected = 'distribution'
+        fillCol(
+          fillRow(
+            radioButtons(
+              ns("plottype_sl"),
+              label = "Plot Type",
+              choices = c('distribution', 'scatter'),
+              selected = 'distribution'
+            ),
+            height = "125px"
           ),
-          height = "125px"
-        ),
-        uiOutput(ns("ui_input")),
-        flex = c(1,5),  height = "calc(100vh - 125px)"
+          uiOutput(ns("ui_input")),
+          flex = c(1, 5),
+          height = "calc(100vh - 125px)"
         ),
         uiOutput(ns("ui_plot")),
         flex = c(1, 3),
@@ -178,7 +180,8 @@ mod_explore_server <- function(id) {
           if (input$plottype_sl == 'distribution') {
             selectInput(ns("type_sl"),
                         label = "Type",
-                        choices = c('count', 'density'),)
+                        choices = c('count', 'density'),
+            )
           } else {
             selectInput(
               ns("variable_y_sl"),
@@ -218,30 +221,31 @@ mod_explore_server <- function(id) {
 
     # generate the output on the main panel
     output$ui_plot <- renderUI({
+      if (input$plottype_sl == 'distribution') {
+        validate(need(input$variable_sl, 'Select a var to plot'))
 
-
-     if(input$plottype_sl == 'distribution'){
-       validate(
-         need(input$variable_sl, 'Select a var to plot')
-       )
         fillCol(
           htmlOutput(ns("descriptions")),
           plotly::plotlyOutput(ns("plot")),
           flex = c(1, 15),
-                height = "calc(100vh - 160px)")
-      } else if (input$plottype_sl == 'scatter'){
+          height = "calc(100vh - 160px)"
+        )
+      } else if (input$plottype_sl == 'scatter') {
         validate(
           need(input$variable_x_sl, 'Select a x var to plot'),
           need(input$variable_y_sl, 'Select a y var to plot')
         )
         fillCol(
-          fillRow(htmlOutput(ns("descriptions")),
-                  height = "20px"),
+          fillRow(htmlOutput(ns(
+            "descriptions"
+          )),
+          height = "20px"),
           fillRow(plotly::plotlyOutput(ns("plot")),
                   height = "calc(100vh - 160px)")
           ,
           flex = c(1, 15),
-          height = "calc(100vh - 160px)")
+          height = "calc(100vh - 160px)"
+        )
       }
 
 
